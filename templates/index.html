@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地知识库问答系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>📚 本地知识库问答系统</h1>
+            <p class="subtitle">基于 Ollama + Milvus 的 RAG 应用</p>
+        </header>
+
+        <!-- 系统状态 -->
+        <section class="status-section">
+            <div class="status-header">
+                <h2>系统状态</h2>
+                <button id="refreshStatusBtn" class="btn-icon" title="刷新状态">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="statusContent" class="status-content">
+                <div class="loading">加载中...</div>
+            </div>
+        </section>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 左侧：文档上传和管理 -->
+            <section class="upload-section">
+                <h2>📄 上传文档</h2>
+
+                <form id="uploadForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="fileInput">选择文件 (.md, .txt)</label>
+                        <input type="file" id="fileInput" accept=".md,.txt" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="chunkSize">分块大小（字符数）</label>
+                        <input type="number" id="chunkSize" value="1024" min="100" max="10000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="separator">分隔符</label>
+                        <select id="separator">
+                            <option value="\n">换行符 (\n)</option>
+                            <option value="\n\n">双换行符 (\n\n)</option>
+                            <option value="。">句号 (。)</option>
+                            <option value="">不分隔</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17,8 12,3 7,8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        上传并处理
+                    </button>
+                </form>
+
+                <div id="uploadResult" class="upload-result"></div>
+
+                <div class="action-buttons">
+                    <button id="viewDocsBtn" class="btn-secondary">查看所有文档</button>
+                    <button id="clearBtn" class="btn-danger">清空知识库</button>
+                </div>
+            </section>
+
+            <!-- 右侧：问答区域 -->
+            <section class="qa-section">
+                <h2>🤖 智能问答</h2>
+
+                <form id="queryForm" class="query-form">
+                    <div class="form-group">
+                        <textarea id="questionInput" placeholder="请输入您的问题..." rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="topK">检索文档数量</label>
+                            <select id="topK">
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            提问
+                        </button>
+                    </div>
+                </form>
+
+                <div id="queryResult" class="query-result">
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <p>请输入问题开始问答</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 文档列表模态框 -->
+        <div id="docsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📋 知识库文档</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="docsList" class="docs-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

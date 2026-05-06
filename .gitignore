@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# 知识库数据
+milvus_data.db/
+*.db
+
+# 上传文件
+uploads/*.md
+uploads/*.txt
+!test_python_basics.md
+
+# 日志
+*.log
+nohup.out
+
+# IDE
+.vscode/
+.idea/
+*.swp

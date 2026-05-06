@@ -1,0 +1,18 @@
+# Knowledge Base QA Application - Python Dependencies
+
+# Web Framework
+Flask==3.0.0
+Flask-CORS==4.0.0
+
+# Vector Database
+pymilvus==2.4.0
+milvus-lite==2.4.0  # 轻量版 Milvus，可直接在 Python 中运行
+
+# HTTP Requests
+requests==2.31.0
+
+# File Processing
+python-dotenv==1.0.0
+
+# Utilities
+numpy==1.26.0
