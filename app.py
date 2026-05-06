@@ -35,8 +35,7 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 # 支持的嵌入模型列表（按优先级排序）
 SUPPORTED_EMBEDDING_MODELS = [
-    "Qwen3-Embedding-0.6B:latest",
-    "qwen3-embedding-0.6b:latest",
+    "qwen3-embedding:0.6b",
     "nomic-embed-text:latest",
     "mxbai-embed-large:latest",
     "all-minilm:latest",
@@ -57,6 +56,9 @@ CHAT_MODEL = None
 MILVUS_HOST = os.getenv("MILVUS_HOST", "localhost")
 MILVUS_PORT = os.getenv("MILVUS_PORT", "19530")
 COLLECTION_NAME = "knowledge_base"
+
+# Milvus Lite ID 计数器
+INSERT_ID_COUNTER = 0
 
 # 默认分段配置
 DEFAULT_CHUNK_SIZE = 1024  # 字符数
@@ -150,7 +152,7 @@ class MilvusManager:
         try:
             # 先尝试使用 milvus-lite（内嵌模式）
             try:
-                from milvus import MilvusClient
+                from pymilvus import MilvusClient
 
                 self.client = MilvusClient("./milvus_data.db")
                 self.use_lite = True
@@ -223,11 +225,25 @@ class MilvusManager:
 
     def ensure_collection(self) -> bool:
         """确保集合存在（创建或获取）"""
+        global INSERT_ID_COUNTER
         try:
             dimension = self.get_dimension()
 
             if self.use_lite:
-                if not self.client.has_collection(COLLECTION_NAME):
+                # 检查集合是否存在，如果存在但有错误，重新创建
+                if self.client.has_collection(COLLECTION_NAME):
+                    # 尝试查询，如果失败则重新创建
+                    try:
+                        self.client.query(COLLECTION_NAME, filter="id >= 0", limit=1)
+                    except:
+                        print("集合异常，重新创建...")
+                        self.client.drop_collection(COLLECTION_NAME)
+                        INSERT_ID_COUNTER = 0
+                        self.client.create_collection(
+                            collection_name=COLLECTION_NAME,
+                            dimension=dimension,
+                        )
+                else:
                     self.client.create_collection(
                         collection_name=COLLECTION_NAME,
                         dimension=dimension,
@@ -247,17 +263,20 @@ class MilvusManager:
 
     def insert_chunks(self, chunks: List[Dict[str, Any]], embeddings: List[List[float]]) -> bool:
         """插入文档分块和向量"""
+        global INSERT_ID_COUNTER
         try:
             if self.use_lite:
                 # Milvus Lite 模式
                 data = []
-                for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+                for chunk, embedding in zip(chunks, embeddings):
                     data.append({
+                        "id": INSERT_ID_COUNTER,  # 使用全局计数器
                         "vector": embedding,
                         "text": chunk["text"],
                         "source_file": chunk["source_file"],
                         "chunk_index": chunk["chunk_index"],
                     })
+                    INSERT_ID_COUNTER += 1
                 self.client.insert(COLLECTION_NAME, data)
                 return True
 
@@ -819,4 +838,4 @@ if __name__ == "__main__":
     print(f"\n启动 Web 服务器...")
     print(f"访问地址: http://localhost:5001")
     print(f"按 Ctrl+C 停止服务\n")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=False)
