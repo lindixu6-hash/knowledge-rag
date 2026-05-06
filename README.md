@@ -1,209 +1,176 @@
-# 本地知识库问答系统
+<div align="center">
 
-基于 Ollama + Milvus 的 RAG（检索增强生成）应用，完全本地部署，保护隐私。
+# 📚 Local Knowledge Base RAG System
 
-## 功能特性
+[![GitHub Stars](https://img.shields.io/github/stars/lindixu6-hash/knowledge-rag?style=social)](https://github.com/lindixu6-hash/knowledge-rag)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-green)](https://ollama.com)
+[![Milvus](https://img.shields.io/badge/Milvus-Vector%20DB-orange)](https://milvus.io)
 
-- ✅ 支持 `.md` 和 `.txt` 格式文档上传
-- ✅ 自动文档分段（可配置分段大小和分隔符）
-- ✅ 使用本地 Ollama 向量模型进行文本嵌入
-- ✅ 使用本地 Milvus 向量数据库存储和检索
-- ✅ 基于本地 Ollama 模型进行智能问答
-- ✅ 查看所有已嵌入的文档数据
-- ✅ 实时系统状态监控
+**A privacy-first RAG (Retrieval-Augmented Generation) application running entirely on your local machine.**
 
-## 系统要求
+Upload documents → Build vector embeddings → Chat with your knowledge base.
 
-### 已部署的模型和数据库
+[English](#english) | [简体中文](#中文)
 
-- Ollama 向量模型: `Qwen3-Embedding-0.6B:latest` 或 `nomic-embed-text:latest`
-- Ollama 问答模型: `gemma3:1b`
-- Milvus 向量数据库
+</div>
 
-**注意**: 系统支持自动检测，如果 `Qwen3-Embedding-0.6B` 未安装，会自动使用 `nomic-embed-text` 等其他可用模型。
+---
 
-### 安装前置依赖
+## English
 
-1. **安装 Ollama**（如果还没有）
-   ```bash
-   # macOS
-   brew install ollama
+### ✨ Features
 
-   # 启动 Ollama 服务
-   ollama serve
-   ```
+- 🔒 **100% Local**: All data stays on your machine, no cloud API calls
+- 📄 **Multiple Formats**: Support for `.md` and `.txt` documents
+- 🧠 **Smart Chunking**: Configurable document splitting for better retrieval
+- 🔍 **Vector Search**: Powered by Milvus vector database
+- 🤖 **Local LLM**: Uses Ollama for embeddings and chat (no API costs!)
+- 🎨 **Clean UI**: Simple web interface for easy interaction
+- 📊 **Status Monitor**: Real-time system status and document tracking
 
-2. **拉取模型**（如果还没有）
-   ```bash
-   # 向量模型（二选一或都安装）
-   ollama pull nomic-embed-text:latest    # 768维，推荐
-   ollama pull Qwen3-Embedding-0.6B:latest  # 如果需要使用此模型
-
-   # 问答模型
-   ollama pull gemma3:1b
-   ```
-
-3. **安装 Milvus**
-   ```bash
-   # 使用 Milvus Lite（推荐，无需 Docker）
-   pip install milvus-lite
-
-   # 或者使用 Docker 运行完整版 Milvus
-   docker run -d --name milvus-standalone \
-     -p 19530:19530 \
-     -p 9091:9091 \
-     milvusdb/milvus:latest
-   ```
-
-## 快速开始
-
-### 1. 安装 Python 依赖
+### 🚀 Quick Start
 
 ```bash
-cd ~/knowledge-base-qa
+# 1. Install Ollama (macOS)
+brew install ollama
+ollama serve
+
+# 2. Pull models
+ollama pull nomic-embed-text    # Embedding model
+ollama pull gemma3:1b           # Chat model
+
+# 3. Install Milvus Lite
+pip install milvus-lite
+
+# 4. Clone and run
+git clone https://github.com/lindixu6-hash/knowledge-rag.git
+cd knowledge-rag
 pip install -r requirements.txt
-```
-
-### 2. 启动应用
-
-```bash
 python app.py
 ```
 
-### 3. 访问应用
+Open browser: **http://localhost:5000**
 
-打开浏览器访问: http://localhost:5000
+### 📸 Screenshot
 
-## 目录结构
+> Upload your screenshot here! (Run the app and take a screenshot)
 
-```
-knowledge-base-qa/
-├── app.py              # Flask 后端主文件
-├── requirements.txt    # Python 依赖
-├── README.md          # 说明文档
-├── start.sh           # 启动脚本
-├── static/
-│   ├── css/
-│   │   └── style.css   # 样式文件
-│   └── js/
-│       └── app.js      # 前端 JavaScript
-├── templates/
-│   └── index.html      # HTML 模板
-└── uploads/            # 临时文件存储
-```
+### 🛠️ Tech Stack
 
-## API 接口
+| Component | Technology |
+|-----------|------------|
+| Backend | Flask |
+| LLM | Ollama (gemma3:1b) |
+| Embeddings | Ollama (nomic-embed-text) |
+| Vector DB | Milvus Lite |
+| Frontend | Vanilla JS + CSS |
 
-### 获取系统状态
-```
-GET /api/status
-```
+### 📖 Usage
 
-### 上传文档
-```
-POST /api/upload
-Content-Type: multipart/form-data
+1. **Upload Documents**: Add `.md` or `.txt` files to build your knowledge base
+2. **Ask Questions**: Query your documents with natural language
+3. **Get Answers**: AI retrieves relevant context and generates responses
 
-参数:
-- file: 文件
-- chunk_size: 分块大小（可选，默认 1024）
-- separator: 分隔符（可选，默认 \n）
-```
+---
 
-### 问答
-```
-POST /api/query
-Content-Type: application/json
+## 中文
 
-{
-  "question": "问题文本",
-  "top_k": 5
-}
-```
+### ✨ 功能特性
 
-### 获取所有文档
-```
-GET /api/documents?limit=100
-```
+- 🔒 **完全本地**：所有数据都在本地，绝不上云，隐私零泄露
+- 📄 **多格式支持**：支持 `.md` 和 `.txt` 文档上传
+- 🧠 **智能分段**：可配置的分块策略，提升检索效果
+- 🔍 **向量检索**：基于 Milvus 向量数据库的高效搜索
+- 🤖 **本地大模型**：使用 Ollama，无需 API 费用
+- 🎨 **简洁界面**：开箱即用的 Web 界面
+- 📊 **状态监控**：实时查看系统状态和文档列表
 
-### 清空知识库
-```
-POST /api/clear
+### 🚀 快速开始
+
+```bash
+# 1. 安装 Ollama (macOS)
+brew install ollama
+ollama serve
+
+# 2. 拉取模型
+ollama pull nomic-embed-text    # 向量模型
+ollama pull gemma3:1b           # 问答模型
+
+# 3. 安装 Milvus Lite
+pip install milvus-lite
+
+# 4. 克隆并运行
+git clone https://github.com/lindixu6-hash/knowledge-rag.git
+cd knowledge-rag
+pip install -r requirements.txt
+python app.py
 ```
 
-## 配置说明
+打开浏览器访问：**http://localhost:5000**
 
-### 环境变量
+### 📸 界面预览
 
-可通过环境变量自定义配置：
+> 这里放你的截图！（运行程序后截图替换）
+
+### 🛠️ 技术栈
+
+| 组件 | 技术 |
+|------|------|
+| 后端 | Flask |
+| 大模型 | Ollama (gemma3:1b) |
+| 向量模型 | Ollama (nomic-embed-text) |
+| 向量数据库 | Milvus Lite |
+| 前端 | 原生 JavaScript + CSS |
+
+### 📖 使用流程
+
+1. **上传文档**：将 `.md` 或 `.txt` 文件上传到知识库
+2. **智能问答**：用自然语言提问
+3. **获取答案**：AI 检索相关内容并生成回答
+
+### ⚙️ 环境变量
 
 ```bash
 # Ollama 服务地址
 export OLLAMA_BASE_URL="http://localhost:11434"
 
-# 向量模型名称
-export EMBEDDING_MODEL="Qwen3-Embedding-0.6B:latest"
+# 向量模型
+export EMBEDDING_MODEL="nomic-embed-text"
 
-# 问答模型名称
+# 问答模型
 export CHAT_MODEL="gemma3:1b"
 
-# Milvus 地址
+# Milvus 配置
 export MILVUS_HOST="localhost"
 export MILVUS_PORT="19530"
 ```
 
-## 使用流程
+### 🔧 故障排查
 
-1. **上传文档**
-   - 点击「选择文件」上传 .md 或 .txt 文件
-   - 调整分块大小和分隔符（可选）
-   - 点击「上传并处理」
-
-2. **智能问答**
-   - 在输入框中输入问题
-   - 选择检索文档数量
-   - 点击「提问」查看答案
-
-3. **管理文档**
-   - 点击「查看所有文档」浏览已上传的内容
-   - 点击「清空知识库」删除所有数据
-
-## 参考资源
-
-- [Ollama 官方文档](https://docs.ollama.com/capabilities/embeddings)
-- [Milvus 官方文档](https://milvus.io/docs/quickstart.md)
-- [PyMilvus GitHub](https://github.com/milvus-io/pymilvus)
-
-## 故障排查
-
-### Ollama 连接失败
+**Ollama 连接失败**
 ```bash
-# 检查 Ollama 是否运行
 curl http://localhost:11434/api/tags
-
-# 重启 Ollama
 ollama serve
 ```
 
-### Milvus 连接失败
+**模型未找到**
 ```bash
-# 如果使用 Docker，检查容器状态
-docker ps | grep milvus
-
-# 查看日志
-docker logs milvus-standalone
-```
-
-### 模型未找到
-```bash
-# 检查已安装的模型
 ollama list
-
-# 重新拉取模型
-ollama pull Qwen3-Embedding-0.6B:latest
+ollama pull nomic-embed-text
 ollama pull gemma3:1b
 ```
 
-## 许可证
+### 📄 License
 
-MIT License
+[MIT License](LICENSE)
+
+---
+
+<div align="center">
+
+**⭐ If this project helped you, please consider giving it a star!**
+
+Made with ❤️ by [lindixu6-hash](https://github.com/lindixu6-hash)
+
+</div>
