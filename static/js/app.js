@@ -247,6 +247,9 @@ function displayAnswer(data) {
         </div>
     ` : '';
 
+    // 使用 marked.js 渲染 Markdown
+    const renderedAnswer = typeof marked !== 'undefined' ? marked.parse(data.answer || '暂无回答') : escapeHtml(data.answer || '暂无回答');
+
     resultDiv.innerHTML = `
         <div class="qa-answer">
             <div class="answer-card">
@@ -256,7 +259,7 @@ function displayAnswer(data) {
                     </svg>
                     <span>回答</span>
                 </div>
-                <div class="answer-content">${escapeHtml(data.answer || '暂无回答')}</div>
+                <div class="answer-content markdown-body">${renderedAnswer}</div>
                 ${sourcesHtml}
             </div>
         </div>
