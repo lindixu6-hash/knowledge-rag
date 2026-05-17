@@ -11,6 +11,7 @@ ENV/
 # 知识库数据
 milvus_data.db/
 *.db
+*.lock
 
 # 上传文件
 uploads/*.md

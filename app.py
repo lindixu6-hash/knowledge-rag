@@ -829,7 +829,7 @@ def init_system():
         print(f"Milvus 集合状态: {info}")
 
     print("\n" + "=" * 40)
-    print("系统初始化完成，访问 http://localhost:5000")
+    print("系统初始化完成，访问 http://localhost:5001")
     print("=" * 40 + "\n")
 
 
